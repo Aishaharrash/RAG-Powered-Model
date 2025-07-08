@@ -1,0 +1,294 @@
+Shipment Management Module – In-Depth Documentation
+Purpose:
+This module is designed to create, edit, manage, and track export units (vehicles or containers) through the full lifecycle of a shipment. It supports operational planning, customs compliance (e.g., AES), carrier integration (e.g., Grimaldi), document generation (e.g., B/L), and internal logistics coordination (e.g., transport from auction to port).
+
+1. Unit Tab – Core Data Entry
+Overview
+The Unit tab is the foundational screen for creating a shipment. It captures everything from customer data to shipping line, physical dimensions, customs values, and pricing. This data flows downstream into B/Ls, AES filings, invoices, and terminal integration.
+
+Sections and Fields
+Parties Section
+Agent: Logistics provider managing the shipment. Often auto-filled.
+
+Shipper: Entity shipping the cargo. Can match Agent.
+
+Exporter: The official exporter for AES purposes.
+
+Consignee: Recipient at the destination. Required.
+
+Notify: Party to be notified upon arrival.
+
+Intermediate Consignee: Optional. Used when there's a broker or intermediary.
+
+All fields support inline selection or creation. Same-as shortcuts help replicate data quickly.
+
+Shipping Section
+Issued On: Date the shipment record was created or formalized.
+
+Line: Shipping line used (e.g., Grimaldi, MSC).
+
+POL: Port of Loading – origin point of the international leg.
+
+Terminal: Terminal within the POL. Affects carrier integration.
+
+POD: Port of Discharge – destination port.
+
+Intermediate POD: Optional stop or transshipment port.
+
+Voyage: Required for carrier integration. Must match carrier data.
+
+Nvocc: Optional non-vessel carrier.
+
+Destination Agent: The logistics contact at POD.
+
+Collector: Responsible for payment or document collection.
+
+Transit: Flag for transshipped cargo.
+
+CTN (Cargo Tracking Number): Required for countries like Benin, Guinea, and Senegal.
+
+Priority: Shipment urgency or category (e.g., Urgent, Used).
+
+Block: Field to prevent shipment from moving forward in the workflow.
+
+Unit Info Section
+Serial Identifier Type: Can be “VIN” or “Serial.” VIN must be 17 characters.
+
+VIN/Serial: Main identifier. Character counter shows input length.
+
+Clickable square triggers VIN decode if 17-char VIN is entered.
+
+Decoding fills in Make, Model, and Year.
+
+Make/Model: Required fields. Must be entered manually or decoded.
+
+HS Code: Required for customs compliance and AES filing.
+
+Registration Year: Mandatory for used vehicles.
+
+Mobility: Movement type (e.g., Fork-lifted, Driveable).
+
+Type/High/Heavy: For carrier classification.
+
+Origin Country/State: Source location of the unit.
+
+Registration No: Vehicle license plate if applicable.
+
+Title: U.S. field – proof of ownership.
+
+ITN: Internal Transaction Number from AES filing.
+
+Physics (Physical Dimensions)
+Measured: Indicates physical measurement occurred.
+
+Length / Width / Height (cm): Required. Affects CBM.
+
+CBM: Auto-calculated if not entered manually.
+
+Weight (kg): Vehicle or container weight.
+
+Booking/Reference: Carrier-provided or internal reference fields.
+
+Pricing Section
+Total: Commercial value of the shipment.
+
+Payment Mode: Prepaid or Collect.
+
+Client: Billing party. Required.
+
+Insured: Boolean flag.
+
+Value: Insured value in currency.
+
+2. Related Units Tab
+Used to associate additional vehicles or cargo with the master unit. Each related unit is treated as an individual item under the primary container or B/L.
+
+Add Related Vehicle Workflow:
+Relation: Type of linkage (STC, Associated, etc.).
+
+VIN/Serial: Unique identifier for each related unit.
+
+Make/Model: Required. Must be manually entered.
+
+HS Code: Required.
+
+Registration Year, Qty, Value, Weight: Optional but recommended.
+
+Registration No, Origin, Condition: For customs and documentation.
+
+Exclude from B/L: When checked, this related unit will not appear on B/L documents.
+
+Custom documents can be uploaded for each related unit via the Files tab (lower section).
+
+3. Bill of Lading (B/L) Tab
+Overrides and controls data used in document generation.
+
+Key Fields:
+Code / Reference: Internal control IDs.
+
+Make/Model: Manual override. If entered, this replaces system values on the B/L.
+
+Manual checkbox: Prevents VIN decoder or integrations from overriding custom description.
+
+Length / Width / Height / CBM / Weight: Used in booking summary.
+
+Lock CBM: Prevents system recalculation of CBM.
+
+Print Status: Controls how the B/L is processed with the carrier:
+
+Seaway Bill
+
+Telex Release
+
+Print at Destination
+
+Originals at Origin
+
+Remark: Optional text that appears on B/L.
+
+4. Clearance / Customs / Admin Tab
+Tracks both export and import clearance requirements. Heavily tied to AES and CTN functionality.
+
+Customs Section:
+Customs Template: Required for U.S. exports. Prefills AES-required fields.
+
+GUOT/UCR: Customs references (rarely used).
+
+CTN: Required for West African countries like Benin. Needed before manifest is sent.
+
+Inspection No / Invoice: Document references.
+
+Export Customs:
+Export Clearance: Checkbox for cleared cargo.
+
+ITN: Mandatory for U.S. AES. Format: X202XXXXXXX.
+
+Status / Cleared On / Clearing Agent: Tracks export process.
+
+Import Customs:
+Import Customs NB / T1 / Cleared On / Status: Destination-side tracking.
+
+Vehicle Details:
+Body Type / Fuel Type / Engine Capacity / Cylinder Count
+
+Exterior/Interior Color: System values or custom text.
+
+5. Files Tab
+Used to attach shipment-related documentation.
+
+Document Types:
+Unit Photo
+
+Commercial Invoice
+
+Registration Document
+
+Previous Clearance
+
+Other
+
+Documents can be previewed, deleted, or downloaded. The lower half of the tab is dedicated to documents attached to related units.
+
+6. Transport Instructions Tab
+Captures pre-carriage logistics, like transporting from auction yard to POL.
+
+Fields:
+Departure / Arrival: Required locations.
+
+Self-Shipped: If checked, customer is handling inland transport.
+
+Append Address: Optional pickup/delivery site.
+
+Order: Useful for multi-leg routes.
+
+Multiple rows can be added to support complex inland logistics before port delivery.
+
+7. Terminal Tab
+Shows data received from the terminal or carrier integration (e.g., Grimaldi).
+
+Fields:
+Barcode: Identifier used by terminal.
+
+Received On / Shipped On / Discharged On: Terminal timestamps.
+
+Location: Last known position.
+
+Loading Code: Used for grouping units in terminal.
+
+Voyage Number / Date / Vessel: Confirmed sailing info.
+
+Length / Width / Height / Weight / CBM: Verified dimensions.
+
+Populated automatically from EDI or API integrations.
+
+8. Integration Log Tab
+Displays API/EDI activity related to this shipment.
+
+Types of Entries:
+SendBooking: Booking data sent to carrier.
+
+GetBooking: Booking confirmation or response from carrier.
+
+Each row shows:
+
+Timestamp
+
+Success/Error status
+
+Type of message
+
+This is essential for troubleshooting missing data or sync issues.
+
+9. Issues Tab
+Appears only for integrated units when there are problems in communication or policy violations.
+
+Examples:
+Declared Length cannot be changed after loading
+
+Booking updates will no longer be sent to carrier
+
+These are typically triggered by carrier rules via EDI. Users must acknowledge the issues by checking a box before saving.
+
+Blocking a Shipment
+To block a shipment:
+
+Use the Block field in the Unit tab.
+
+This may disable:
+
+Carrier booking
+
+Terminal release
+
+Documentation generation
+
+Add a note explaining the block in the Terms/Notes tab.
+
+Unblock by clearing the field and saving again.
+
+VIN Decoding
+VIN decoding is supported through a small clickable square next to the Serial/VIN input field.
+
+Once a 17-character VIN is entered, the square activates.
+
+Clicking it will decode the VIN and auto-fill Make, Model, and Year (and possibly engine/fuel).
+
+Manual changes can be made in the B/L tab without overwriting.
+
+Overriding Make/Model for Documents
+Use the Make/Model field in the B/L tab to override what appears on documents.
+
+Check the Manual box to prevent auto-replacement.
+
+This allows use of detailed descriptors like “Toyota Corolla LE Hybrid 1.8L.”
+
+Adding Units Inside a Main Unit
+To add related units:
+
+Use the Related Units tab.
+
+Click Add Related Vehicle.
+
+Fill in all required info.
+
+Related units are logically tied to the parent and can appear on documents, or be excluded if needed.
